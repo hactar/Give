@@ -28,7 +28,7 @@ function give_edit_customer( $args ) {
 	$customer_edit_role = apply_filters( 'give_edit_customers_role', 'edit_give_payments' );
 
 	if ( ! is_admin() || ! current_user_can( $customer_edit_role ) ) {
-		wp_die( esc_html__( 'You do not have permission to edit this donor.', 'give' ) );
+		wp_die( esc_html__( 'You do not have permission to edit this donor.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
 	}
 
 	if ( empty( $args ) ) {
@@ -40,7 +40,7 @@ function give_edit_customer( $args ) {
 	$nonce         = $args['_wpnonce'];
 
 	if ( ! wp_verify_nonce( $nonce, 'edit-customer' ) ) {
-		wp_die( esc_html__( 'Cheatin\' eh?!', 'give' ) );
+		wp_die( esc_html__( 'Cheatin&#8217; uh?', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 400 ) );
 	}
 
 	$customer = new Give_Customer( $customer_id );
@@ -126,6 +126,16 @@ function give_edit_customer( $args ) {
 	$customer_data = array_map( 'sanitize_text_field', $customer_data );
 	$address       = array_map( 'sanitize_text_field', $address );
 
+
+	/**
+	 * Fires before editing customer.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int   $customer_id   The ID of the customer.
+	 * @param array $customer_data The customer data.
+	 * @param array $address       The customer address.
+	 */
 	do_action( 'give_pre_edit_customer', $customer_id, $customer_data, $address );
 
 	$output         = array();
@@ -137,7 +147,7 @@ function give_edit_customer( $args ) {
 			update_user_meta( $customer->user_id, '_give_user_address', $address );
 		}
 
-		// Update some payment meta if we need to
+		// Update some donation meta if we need to
 		$payments_array = explode( ',', $customer->payment_ids );
 
 		if ( $customer->email != $previous_email ) {
@@ -162,6 +172,14 @@ function give_edit_customer( $args ) {
 
 	}
 
+	/**
+	 * Fires after editing customer.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int   $customer_id   The ID of the customer.
+	 * @param array $customer_data The customer data.
+	 */
 	do_action( 'give_post_edit_customer', $customer_id, $customer_data );
 
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
@@ -190,7 +208,7 @@ function give_customer_save_note( $args ) {
 	$customer_view_role = apply_filters( 'give_view_customers_role', 'view_give_reports' );
 
 	if ( ! is_admin() || ! current_user_can( $customer_view_role ) ) {
-		wp_die( esc_html__( 'You do not have permission to edit this donor.', 'give' ) );
+		wp_die( esc_html__( 'You do not have permission to edit this donor.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
 	}
 
 	if ( empty( $args ) ) {
@@ -202,7 +220,7 @@ function give_customer_save_note( $args ) {
 	$nonce         = $args['add_customer_note_nonce'];
 
 	if ( ! wp_verify_nonce( $nonce, 'add-customer-note' ) ) {
-		wp_die( esc_html__( 'Cheatin\' eh?!', 'give' ) );
+		wp_die( esc_html__( 'Cheatin&#8217; uh?', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 400 ) );
 	}
 
 	if ( empty( $customer_note ) ) {
@@ -216,6 +234,14 @@ function give_customer_save_note( $args ) {
 	$customer = new Give_Customer( $customer_id );
 	$new_note = $customer->add_note( $customer_note );
 
+	/**
+	 * Fires before inserting customer note.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int    $customer_id The ID of the customer.
+	 * @param string $new_note    Note content.
+	 */
 	do_action( 'give_pre_insert_customer_note', $customer_id, $new_note );
 
 	if ( ! empty( $new_note ) && ! empty( $customer->id ) ) {
@@ -260,7 +286,7 @@ function give_customer_delete( $args ) {
 	$customer_edit_role = apply_filters( 'give_edit_customers_role', 'edit_give_payments' );
 
 	if ( ! is_admin() || ! current_user_can( $customer_edit_role ) ) {
-		wp_die( esc_html__( 'You do not have permission to delete donors.', 'give' ) );
+		wp_die( esc_html__( 'You do not have permission to delete donors.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
 	}
 
 	if ( empty( $args ) ) {
@@ -273,7 +299,7 @@ function give_customer_delete( $args ) {
 	$nonce       = $args['_wpnonce'];
 
 	if ( ! wp_verify_nonce( $nonce, 'delete-customer' ) ) {
-		wp_die( esc_html__( 'Cheatin\' eh?!', 'give' ) );
+		wp_die( esc_html__( 'Cheatin&#8217; uh?', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 400 ) );
 	}
 
 	if ( ! $confirm ) {
@@ -287,6 +313,15 @@ function give_customer_delete( $args ) {
 
 	$customer = new Give_Customer( $customer_id );
 
+	/**
+	 * Fires before deleting customer.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int  $customer_id The ID of the customer.
+	 * @param bool $confirm     Delete confirmation.
+	 * @param bool $remove_data Records delete confirmation.
+	 */
 	do_action( 'give_pre_delete_customer', $customer_id, $confirm, $remove_data );
 
 	$success = false;
@@ -300,14 +335,14 @@ function give_customer_delete( $args ) {
 
 			if ( $remove_data ) {
 
-				// Remove all payments, logs, etc
+				// Remove all donations, logs, etc
 				foreach ( $payments_array as $payment_id ) {
 					give_delete_purchase( $payment_id );
 				}
 
 			} else {
 
-				// Just set the payments to customer_id of 0
+				// Just set the donations to customer_id of 0
 				foreach ( $payments_array as $payment_id ) {
 					give_update_payment_meta( $payment_id, '_give_payment_customer_id', 0 );
 				}
@@ -351,7 +386,7 @@ function give_disconnect_customer_user_id( $args ) {
 	$customer_edit_role = apply_filters( 'give_edit_customers_role', 'edit_give_payments' );
 
 	if ( ! is_admin() || ! current_user_can( $customer_edit_role ) ) {
-		wp_die( esc_html__( 'You do not have permission to edit this donor.', 'give' ) );
+		wp_die( esc_html__( 'You do not have permission to edit this donor.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
 	}
 
 	if ( empty( $args ) ) {
@@ -362,7 +397,7 @@ function give_disconnect_customer_user_id( $args ) {
 	$nonce       = $args['_wpnonce'];
 
 	if ( ! wp_verify_nonce( $nonce, 'edit-customer' ) ) {
-		wp_die( esc_html__( 'Cheatin\' eh?!', 'give' ) );
+		wp_die( esc_html__( 'Cheatin&#8217; uh?', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 400 ) );
 	}
 
 	$customer = new Give_Customer( $customer_id );
@@ -370,7 +405,17 @@ function give_disconnect_customer_user_id( $args ) {
 		return false;
 	}
 
-	do_action( 'give_pre_customer_disconnect_user_id', $customer_id, $customer->user_id );
+	$user_id = $customer->user_id;
+
+	/**
+	 * Fires before disconnecting user ID from a donor.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int $customer_id The ID of the customer.
+	 * @param int $user_id     The ID of the user.
+	 */
+	do_action( 'give_pre_customer_disconnect_user_id', $customer_id, $user_id );
 
 	$customer_args = array( 'user_id' => 0 );
 
@@ -389,6 +434,13 @@ function give_disconnect_customer_user_id( $args ) {
 		give_set_error( 'give-disconnect-user-fail', esc_html__( 'Failed to disconnect user from donor.', 'give' ) );
 	}
 
+	/**
+	 * Fires after disconnecting user ID from a donor.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int $customer_id The ID of the customer.
+	 */
 	do_action( 'give_post_customer_disconnect_user_id', $customer_id );
 
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {

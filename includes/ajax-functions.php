@@ -19,7 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Check if AJAX works as expected
  *
- * @since 1.0
+ * @since  1.0
+ *
  * @return bool True if AJAX works, false otherwise
  */
 function give_test_ajax_works() {
@@ -95,7 +96,8 @@ function give_test_ajax_works() {
 /**
  * Get AJAX URL
  *
- * @since 1.0
+ * @since  1.0
+ *
  * @return string
  */
 function give_get_ajax_url() {
@@ -112,12 +114,18 @@ function give_get_ajax_url() {
 }
 
 /**
- * Loads Checkout Login Fields the via AJAX
+ * Loads Checkout Login Fields via AJAX
  *
- * @since 1.0
+ * @since  1.0
+ *
  * @return void
  */
 function give_load_checkout_login_fields() {
+	/**
+	 * Fires on checkout login fields via AJAX.
+	 *
+	 * @since 1.0
+	 */
 	do_action( 'give_purchase_form_login_fields' );
 	give_die();
 }
@@ -127,7 +135,8 @@ add_action( 'wp_ajax_nopriv_give_checkout_login', 'give_load_checkout_login_fiel
 /**
  * Load Checkout Fields
  *
- * @since 1.3.6
+ * @since  1.3.6
+ *
  * @return void
  */
 function give_load_checkout_fields() {
@@ -135,6 +144,13 @@ function give_load_checkout_fields() {
 
 	ob_start();
 
+	/**
+	 * Fires while loading checkout fields.
+	 *
+	 * @since 1.3.6
+	 *
+	 * @param int $form_id The form ID.
+	 */
 	do_action( 'give_purchase_form_register_login_fields', $form_id );
 
 	$fields = ob_get_clean();
@@ -151,7 +167,8 @@ add_action( 'wp_ajax_nopriv_give_checkout_register', 'give_load_checkout_fields'
 /**
  * Get Form Title via AJAX (used only in WordPress Admin)
  *
- * @since 1.0
+ * @since  1.0
+ *
  * @return void
  */
 function give_ajax_get_form_title() {
@@ -172,7 +189,8 @@ add_action( 'wp_ajax_nopriv_give_get_form_title', 'give_ajax_get_form_title' );
 /**
  * Retrieve a states drop down
  *
- * @since 1.0
+ * @since  1.0
+ *
  * @return void
  */
 function give_ajax_get_states_field() {
@@ -211,7 +229,8 @@ add_action( 'wp_ajax_nopriv_give_get_states', 'give_ajax_get_states_field' );
 /**
  * Retrieve a states drop down
  *
- * @since 1.0
+ * @since  1.0
+ *
  * @return void
  */
 function give_ajax_form_search() {
@@ -255,7 +274,8 @@ add_action( 'wp_ajax_nopriv_give_form_search', 'give_ajax_form_search' );
 /**
  * Search the donors database via Ajax
  *
- * @since 1.0
+ * @since  1.0
+ *
  * @return void
  */
 function give_ajax_donor_search() {
@@ -299,7 +319,8 @@ add_action( 'wp_ajax_give_donor_search', 'give_ajax_donor_search' );
 /**
  * Searches for users via ajax and returns a list of results
  *
- * @since 1.0
+ * @since  1.0
+ *
  * @return void
  */
 function give_ajax_search_users() {
@@ -345,7 +366,8 @@ add_action( 'wp_ajax_give_search_users', 'give_ajax_search_users' );
 /**
  * Check for Price Variations (Multi-level donation forms)
  *
- * @since 1.5
+ * @since  1.5
+ *
  * @return void
  */
 function give_check_for_form_price_variations() {
@@ -392,12 +414,13 @@ add_action( 'wp_ajax_give_check_for_form_price_variations', 'give_check_for_form
 /**
  * Check for Variation Prices HTML  (Multi-level donation forms)
  *
- * @since 1.6
+ * @since  1.6
+ *
  * @return void
  */
 function give_check_for_form_price_variations_html() {
 	if ( ! current_user_can( 'edit_give_payments', get_current_user_id() ) ) {
-		die( '-1' );
+		wp_die();
 	}
 
 	$form_id = intval( $_POST['form_id'] );
@@ -405,7 +428,7 @@ function give_check_for_form_price_variations_html() {
 	$form    = get_post( $form_id );
 
 	if ( 'give_forms' != $form->post_type ) {
-		die( '-2' );
+		wp_die();
 	}
 
     if ( ! give_has_variable_prices( $form_id ) ) {

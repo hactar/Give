@@ -78,7 +78,7 @@ class Give_Tools_Recount_Single_Customer_Stats extends Give_Batch_Export {
 					continue;
 				}
 
-				$should_process_payment = 'publish' == $payment->post_status || 'revoked' == $payment->post_status ? true : false;
+				$should_process_payment = 'publish' == $payment->post_status ? true : false;
 				$should_process_payment = apply_filters( 'give_customer_recount_should_process_payment', $should_process_payment, $payment );
 
 				if ( true === $should_process_payment ) {
@@ -165,7 +165,7 @@ class Give_Tools_Recount_Single_Customer_Stats extends Give_Batch_Export {
 
 			$removed_payments = array_unique( get_option( 'give_stats_missing_payments' . $customer->id, array() ) );
 
-			// Find non-existing payments (deleted) and total up the purchase count
+			// Find non-existing payments (deleted) and total up the donation count
 			$purchase_count = 0;
 			foreach ( $payment_ids as $key => $payment_id ) {
 				if ( in_array( $payment_id, $removed_payments ) ) {

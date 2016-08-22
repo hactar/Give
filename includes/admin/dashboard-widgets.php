@@ -50,20 +50,19 @@ function give_dashboard_sales_widget() {
 
 			<p class="give-dashboard-happy-day"><?php
 				printf(
-					/* translators: %s: day of the week */
+				/* translators: %s: day of the week */
 					esc_html__( 'Happy %s!', 'give' ),
 					date( 'l', current_time( 'timestamp' ) )
 				);
-			?></p>
+				?></p>
 
 			<?php $earnings_today = $stats->get_earnings( 0, 'today', false ); ?>
 
 			<p class="give-dashboard-today-earnings"><?php echo give_currency_filter( give_format_amount( $earnings_today ) ); ?></p>
 
-			<p class="give-orders-today"><?php $donations_today = $stats->get_sales( 0, 'today', false, array(
-					'publish',
-					'revoked'
-				) ); ?><?php echo give_format_amount( $donations_today, false ); ?>
+			<p class="give-orders-today">
+				<?php $donations_today = $stats->get_sales( 0, 'today', false ); ?>
+				<?php echo give_format_amount( $donations_today, false ); ?>
 				<span><?php echo _x( 'donations today', 'Displays in WP admin dashboard widget after the day\'s total donations', 'give' ); ?></span>
 			</p>
 
@@ -84,24 +83,24 @@ function give_dashboard_sales_widget() {
 				<td>
 					<p class="give-dashboard-stat-total"><?php echo give_currency_filter( give_format_amount( $stats->get_earnings( 0, 'this_week' ) ) ); ?></p>
 
-					<p class="give-dashboard-stat-total-label"><?php esc_html_e( 'this week', 'give' ); ?></p>
+					<p class="give-dashboard-stat-total-label"><?php esc_html_e( 'This Week', 'give' ); ?></p>
 				</td>
 				<td>
 					<p class="give-dashboard-stat-total"><?php echo give_currency_filter( give_format_amount( $stats->get_earnings( 0, 'this_month' ) ) ); ?></p>
 
-					<p class="give-dashboard-stat-total-label"><?php esc_html_e( 'this month', 'give' ); ?></p>
+					<p class="give-dashboard-stat-total-label"><?php esc_html_e( 'This Month', 'give' ); ?></p>
 				</td>
 			</tr>
 			<tr id="give-table-stats-tr-2">
 				<td>
 					<p class="give-dashboard-stat-total"><?php echo give_currency_filter( give_format_amount( $stats->get_earnings( 0, 'last_month' ) ) ) ?></p>
 
-					<p class="give-dashboard-stat-total-label"><?php esc_html_e( 'last month', 'give' ); ?></p>
+					<p class="give-dashboard-stat-total-label"><?php esc_html_e( 'Last Month', 'give' ); ?></p>
 				</td>
 				<td>
 					<p class="give-dashboard-stat-total"><?php echo give_currency_filter( give_format_amount( $stats->get_earnings( 0, 'this_year', false ) ) ) ?></p>
 
-					<p class="give-dashboard-stat-total-label"><?php esc_html_e( 'this year', 'give' ); ?></p>
+					<p class="give-dashboard-stat-total-label"><?php esc_html_e( 'This Year', 'give' ); ?></p>
 				</td>
 			</tr>
 			</tbody>
@@ -109,7 +108,7 @@ function give_dashboard_sales_widget() {
 
 	</div>
 
-<?php
+	<?php
 }
 
 /**
@@ -125,9 +124,9 @@ function give_dashboard_at_a_glance_widget( $items ) {
 	$num_posts = wp_count_posts( 'give_forms' );
 
 	if ( $num_posts && $num_posts->publish ) {
-        
+
 		$text = sprintf(
-			/* translators: 1: number of posts published 2: forms singular label 3: forms plural label */
+		/* translators: 1: number of posts published 2: forms singular label 3: forms plural label */
 			_n( '%1$s Give %2$s', '%1$s Give %3$s', $num_posts->publish, 'give' ),
 			$num_posts->publish,
 			give_get_forms_label_singular(),
@@ -148,4 +147,4 @@ function give_dashboard_at_a_glance_widget( $items ) {
 	return $items;
 }
 
-add_filter( 'dashboard_glance_items', 'give_dashboard_at_a_glance_widget', 1, 1);
+add_filter( 'dashboard_glance_items', 'give_dashboard_at_a_glance_widget', 1, 1 );

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class Give_Plugin_Settings
  *
@@ -140,7 +141,9 @@ class Give_Plugin_Settings {
 
 		<div class="wrap give_settings_page cmb2_options_page <?php echo $this->key; ?>">
 
-			<h1 class="nav-tab-wrapper">
+			<h1 class="screen-reader-text"><?php esc_html_e( 'Give Settings', 'give' ); ?></h1>
+
+			<h2 class="nav-tab-wrapper">
 				<?php
 				foreach ( $this->give_get_settings_tabs() as $tab_id => $tab_name ) {
 
@@ -155,11 +158,11 @@ class Give_Plugin_Settings {
 
 					$active = $active_tab == $tab_id ? ' nav-tab-active' : '';
 
-					echo '<a href="' . esc_url( $tab_url ) . '" title="' . esc_attr( $tab_name ) . '" class="nav-tab' . $active . '" id="tab-' . $tab_id . '">' . esc_html( $tab_name ) . '</a>';
+					echo '<a href="' . esc_url( $tab_url ) . '" class="nav-tab' . $active . '" id="tab-' . $tab_id . '">' . esc_html( $tab_name ) . '</a>';
 
 				}
 				?>
-			</h1>
+			</h2>
 
 			<?php
 			//Loop through and output settings
@@ -267,8 +270,8 @@ class Give_Plugin_Settings {
 							) ),
 						),
 						array(
-							'name'    => esc_html__( 'Failed Transaction Page', 'give' ),
-							'desc'    => esc_html__( 'This is the page donors are sent to if their transaction is cancelled or fails.', 'give' ),
+							'name'    => esc_html__( 'Failed Donation Page', 'give' ),
+							'desc'    => esc_html__( 'This is the page donors are sent to if their donation is cancelled or fails.', 'give' ),
 							'id'      => 'failure_page',
 							'type'    => 'select',
 							'options' => give_cmb2_get_post_options( array(
@@ -322,12 +325,12 @@ class Give_Plugin_Settings {
 							'default' => 'before',
 						),
 						array(
-							'name'    => esc_html__( 'Thousands Separator', 'give' ),
-							'desc'    => esc_html__( 'The symbol (typically , or .) to separate thousands.', 'give' ),
-							'id'      => 'thousands_separator',
-							'type'    => 'text_small',
+							'name'            => esc_html__( 'Thousands Separator', 'give' ),
+							'desc'            => esc_html__( 'The symbol (typically , or .) to separate thousands.', 'give' ),
+							'id'              => 'thousands_separator',
+							'type'            => 'text_small',
 							'sanitization_cb' => 'give_sanitize_thousand_separator',
-							'default' => ',',
+							'default'         => ',',
 						),
 						array(
 							'name'    => esc_html__( 'Decimal Separator', 'give' ),
@@ -335,6 +338,14 @@ class Give_Plugin_Settings {
 							'id'      => 'decimal_separator',
 							'type'    => 'text_small',
 							'default' => '.',
+						),
+						array(
+							'name'            => __( 'Number of Decimals', 'give' ),
+							'desc'            => __( 'This sets the number of decimal points shown in displayed prices.', 'give' ),
+							'id'              => 'number_decimals',
+							'type'            => 'text_small',
+							'default'         => 2,
+							'sanitization_cb' => 'give_sanitize_number_decimals',
 						),
 					)
 				)
@@ -355,7 +366,7 @@ class Give_Plugin_Settings {
 						),
 						array(
 							'name' => esc_html__( 'Test Mode', 'give' ),
-							'desc' => esc_html__( 'While in test mode no live transactions are processed. To fully use test mode, you must have a sandbox (test) account for the payment gateway you are testing.', 'give' ),
+							'desc' => esc_html__( 'While in test mode no live donations are processed. To fully use test mode, you must have a sandbox (test) account for the payment gateway you are testing.', 'give' ),
 							'id'   => 'test_mode',
 							'type' => 'checkbox'
 						),
@@ -468,15 +479,15 @@ class Give_Plugin_Settings {
 						),
 						array(
 							'name' => esc_html__( 'Enable Floating Labels', 'give' ),
-							/* translators: %s: http://bradfrost.com/blog/post/float-label-pattern/ */
-							'desc' => sprintf( wp_kses ( __( 'Enable this option if you would like to enable <a href="%s" target="_blank">floating labels</a> in Give\'s donation forms. <br />Be aware that if you have the "Disable CSS" option enabled, you will need to style the floating labels yourself.', 'give' ) , array(  'a' => array( 'href' => array() ) ) ), esc_url( 'http://bradfrost.com/blog/post/float-label-pattern/' ) ),
+							/* translators: %s: https://givewp.com/documentation/core/give-forms/creating-give-forms/#floating-labels */
+							'desc' => sprintf( wp_kses( __( 'Enable this option if you would like to enable <a href="%s" target="_blank">floating labels</a> in Give\'s donation forms. <br />Be aware that if you have the "Disable CSS" option enabled, you will need to style the floating labels yourself.', 'give' ), array( 'a' => array( 'href' => array(), 'target' => array() ) ) ), esc_url( 'https://givewp.com/documentation/core/give-forms/creating-give-forms/#floating-labels' ) ),
 							'id'   => 'enable_floatlabels',
 							'type' => 'checkbox'
 						),
 						array(
 							'name' => esc_html__( 'Disable Welcome Screen', 'give' ),
 							/* translators: %s: about page URL */
-							'desc' => sprintf( wp_kses ( __( 'Enable this option if you would like to disable the Give Welcome screen every time Give is activated and/or updated. You can always access the <a href="%s">Welcome Screen</a> if you want in the future.', 'give' ), array(  'a' => array( 'href' => array() ) ) ), esc_url( admin_url( 'index.php?page=give-about' ) ) ),
+							'desc' => sprintf( wp_kses( __( 'Enable this option if you would like to disable the Give Welcome screen every time Give is activated and/or updated. You can always access the <a href="%s">Welcome Screen</a> if you want in the future.', 'give' ), array( 'a' => array( 'href' => array() ) ) ), esc_url( admin_url( 'index.php?page=give-about' ) ) ),
 							'id'   => 'disable_welcome',
 							'type' => 'checkbox'
 						),
@@ -633,7 +644,7 @@ class Give_Plugin_Settings {
 						array(
 							'id'      => 'admin_notice_emails',
 							'name'    => esc_html__( 'Donation Notification Emails', 'give' ),
-							'desc'    => __( 'Enter the email address(es) that should receive a notification anytime a donation is made, please only enter <span class="give-underline">one email address per line</span> and not separated by commas.', 'give' ),
+							'desc'    => __( 'Enter the email address(es) that should receive a notification anytime a donation is made, please only enter <span class="give-underline">one email address per line</span> and <strong>not separated by commas</strong>.', 'give' ),
 							'type'    => 'textarea',
 							'default' => get_bloginfo( 'admin_email' )
 						),
@@ -770,7 +781,7 @@ class Give_Plugin_Settings {
 				'show_on'    => array( 'key' => 'options-page', 'value' => array( $this->key, ), ),
 				'fields'     => apply_filters( 'give_settings_system', array(
 						array(
-							'id'   => 'system_info',
+							'id'   => 'system-info-textarea',
 							'name' => esc_html__( 'System Info', 'give' ),
 							'desc' => esc_html__( 'Please copy and paste this information in your ticket when contacting support.', 'give' ),
 							'type' => 'system_info'
@@ -840,6 +851,7 @@ $Give_Settings = new Give_Plugin_Settings();
  * @since  0.1.0
  *
  * @param  string $key Options array key
+ * @param  string $default The default option if the option isn't set
  *
  * @return mixed        Option value
  */
@@ -848,7 +860,7 @@ function give_get_option( $key = '', $default = false ) {
 	$value = ! empty( $give_options[ $key ] ) ? $give_options[ $key ] : $default;
 	$value = apply_filters( 'give_get_option', $value, $key, $default );
 
-	return apply_filters( 'give_get_option_' . $key, $value, $key, $default );
+	return apply_filters( "give_get_option_{$key}", $value, $key, $default );
 }
 
 
@@ -861,7 +873,7 @@ function give_get_option( $key = '', $default = false ) {
  *
  * @since 1.0
  *
- * @param string $key The Key to update
+ * @param string          $key The Key to update
  * @param string|bool|int $value The value to set the key to
  *
  * @return boolean True if updated, false if not.
@@ -956,7 +968,7 @@ function give_get_settings() {
 
 
 /**
- * Give Settings Array Insert
+ * Give Settings Array Insert.
  *
  * Allows other Add-ons and plugins to insert Give settings at a desired position.
  *
@@ -1124,7 +1136,7 @@ function give_description_callback( $field_object, $escaped_value, $object_id, $
  * Gets a number of posts and displays them as options
  *
  * @param  array $query_args Optional. Overrides defaults.
- * @param  bool $force Force the pages to be loaded even if not on settings
+ * @param  bool  $force Force the pages to be loaded even if not on settings
  *
  * @see: https://github.com/WebDevStudios/CMB2/wiki/Adding-your-own-field-types
  * @return array An array of options that matches the CMB2 options array
@@ -1228,7 +1240,7 @@ function give_license_key_callback( $field_object, $escaped_value, $object_id, $
 /**
  * Display the API Keys
  *
- * @since       2.0
+ * @since       1.0
  * @return      void
  */
 function give_api_callback() {
@@ -1237,6 +1249,11 @@ function give_api_callback() {
 		return;
 	}
 
+	/**
+	 * Fires before displaying API keys.
+	 *
+	 * @since 1.0
+	 */
 	do_action( 'give_tools_api_keys_before' );
 
 	require_once GIVE_PLUGIN_DIR . 'includes/admin/class-api-keys-table.php';
@@ -1255,6 +1272,11 @@ function give_api_callback() {
 	</span>
 	<?php
 
+	/**
+	 * Fires after displaying API keys.
+	 *
+	 * @since 1.0
+	 */
 	do_action( 'give_tools_api_keys_after' );
 }
 
@@ -1272,7 +1294,16 @@ add_action( 'give_settings_tab_api_keys', 'give_api_callback' );
  * @return void
  */
 function give_hook_callback( $args ) {
-	do_action( 'give_' . $args['id'] );
+
+	$id = $args['id'];
+
+	/**
+	 * Fires in give field.
+	 *
+	 * @since 1.0
+	 */
+	do_action( "give_{$id}" );
+
 }
 
 /**

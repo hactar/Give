@@ -723,7 +723,7 @@ div.cmb-type-levels-repeater-header + div.cmb-repeat-group-wrap {
 
 #_give_donation_levels_repeat {
   background: #F7F7F7;
-  padding: 0 12px 20px;
+  padding: 0 1px 20px 12px;
   box-sizing: border-box; }
   #_give_donation_levels_repeat .cmb-row, #_give_donation_levels_repeat .inside {
     margin: 0; }
@@ -758,7 +758,8 @@ div.cmb-type-levels-repeater-header + div.cmb-repeat-group-wrap {
   border-right: 0; }
 
 .give-money-symbol-after {
-  border-left: 0; }
+  border-left: 0;
+  margin-left: -4px; }
 
 .give-underline {
   text-decoration: underline; }
@@ -1032,7 +1033,7 @@ Tooltips
 .give-graph .y2Axis {
   color: #546e7a !important; }
 
-body.give_forms_page_give-reports h1.nav-tab-wrapper, body.give_forms_page_give-payment-history h1.nav-tab-wrapper {
+body.give_forms_page_give-reports h1.nav-tab-wrapper, body.give_forms_page_give-reports h2.nav-tab-wrapper, body.give_forms_page_give-payment-history h1.nav-tab-wrapper, body.give_forms_page_give-payment-history h2.nav-tab-wrapper {
   margin-bottom: 10px; }
 
 body.give_forms_page_give-reports .actions, body.give_forms_page_give-payment-history .actions {
@@ -1109,10 +1110,14 @@ body.give_forms_page_give-reports table.export-options-table span#give-start-wra
   font-weight: bold; }
 
 #export-donor-options-wrap ul {
-  max-width: 900px; }
+  max-width: 900px;
+  overflow: hidden; }
   #export-donor-options-wrap ul li {
     margin: 0;
-    padding: 5px; }
+    padding: 0 5px 5px 0;
+    box-sizing: border-box;
+    float: left;
+    width: 33%; }
 
 #give-tools-recount-form .notice-wrap {
   position: relative;
@@ -1309,6 +1314,9 @@ table.give-table td.row-title p {
 /*------------------------------------
 Settings
 --------------------------------------*/
+.give_settings_page .give-recurring-no-license {
+  display: none; }
+
 .give_settings_page .nav-tab-wrapper {
   margin-bottom: 5px; }
 
@@ -1509,21 +1517,18 @@ a.give-delete {
 #give-payments-filter #the-list .check-column input {
   margin-top: 1px; }
 
+#give-payments-filter .column-details {
+  width: 50px; }
+
+#give-payments-filter .column-amount {
+  width: 120px; }
+
 tr.status-refunded td {
   background: #cecece;
   border-top-color: #ccc; }
 
-.wp-list-table.forms th#ID {
-  width: 80px; }
-
-.wp-list-table.forms th#details {
-  width: 130px; }
-
 .wp-list-table.forms th#date {
   width: 140px; }
-
-.wp-list-table.forms th#user {
-  width: 130px; }
 
 .give-mobile-link {
   line-height: 32px;
@@ -1562,7 +1567,7 @@ tr.status-refunded td {
 .give-donation-status.status-revoked > span {
   background-color: #d9534f; }
 
-.give-donation-status.status-subscription > span, .give-donation-status.status-give_subscription > span {
+.give-donation-status.status-subscription > span, .give-donation-status.status-renewal > span, .give-donation-status.status-give_subscription > span {
   background-color: #5bc0de; }
 
 #test-payment-label {
@@ -1603,7 +1608,7 @@ tr.status-refunded td {
   position: relative;
   top: 3px; }
 
-.column-donation .donation-level-text-wrap {
+.column-donation_form .donation-level-text-wrap {
   font-style: italic;
   display: block; }
 
@@ -1715,9 +1720,6 @@ Responsiveness
   color: #666;
   font-weight: 600; }
 
-#give-donation-overview .inside {
-  padding: 12px; }
-
 input.give-price-field {
   width: 80px;
   padding: 3px 5px; }
@@ -1762,9 +1764,8 @@ input.give-price-field {
   .order-data-column input[type="email"] {
     padding: 6px 10px; } }
 
-#give-customer-details .inside {
-  padding-top: 15px;
-  padding-bottom: 15px; }
+#give-donor-details .inside, #give-donation-overview .inside {
+  margin-top: 0; }
 
 .give_forms_page_give-payment-history #give-dashboard-widgets-wrap #side-sortables {
   padding-top: 0; }
@@ -1792,7 +1793,7 @@ input.give-price-field {
     font-weight: bold;
     margin: 15px 0 0;
     line-height: 1; }
-  .give-dashboard-widget .give-dashboard-today .give-orders-today {
+  .give-dashboard-widget .give-dashboard-today .give-donations-today {
     font-size: 18px;
     font-weight: bold;
     margin: 0 0 30px;
@@ -2209,5 +2210,8 @@ div.sc-shortcode {
 */
 body.rtl #give-donation-overview th {
   text-align: right; }
+
+body.rtl #export-donor-options-wrap ul li {
+  padding: 0 0 5px 5px; }
 
 /*# sourceMappingURL=../sourcemaps/give-admin.css.map */

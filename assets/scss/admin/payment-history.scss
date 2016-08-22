@@ -62,6 +62,14 @@
     margin-top: 1px;
   }
 
+  .column-details {
+    width: 50px;
+  }
+
+  .column-amount {
+    width: 120px;
+  }
+
 }
 
 tr.status-refunded td {
@@ -69,20 +77,8 @@ tr.status-refunded td {
   border-top-color: #ccc;
 }
 
-.wp-list-table.forms th#ID {
-  width: 80px;
-}
-
-.wp-list-table.forms th#details {
-  width: 130px;
-}
-
 .wp-list-table.forms th#date {
   width: 140px;
-}
-
-.wp-list-table.forms th#user {
-  width: 130px;
 }
 
 .give-mobile-link {
@@ -139,7 +135,7 @@ tr.status-refunded td {
     background-color: $status-revoked;
   }
 
-  &.status-subscription > span, &.status-give_subscription > span {
+  &.status-subscription > span, &.status-renewal > span, &.status-give_subscription > span {
     background-color: $status-subscription;
   }
 
@@ -183,7 +179,7 @@ tr.status-refunded td {
 }
 
 //Donation Column
-.column-donation {
+.column-donation_form {
   .donation-level-text-wrap {
     font-style: italic;
     display: block;
@@ -333,10 +329,6 @@ Responsiveness
   font-weight: 600;
 }
 
-#give-donation-overview .inside {
-  padding: 12px;
-}
-
 input.give-price-field {
   width: 80px;
   padding: 3px 5px;
@@ -417,18 +409,11 @@ input.give-price-field {
   }
 }
 
-
 //------------------------------------------
 //Donation Details
 //------------------------------------------
-
-#give-customer-details {
-
-  .inside {
-    padding-top: 15px;
-    padding-bottom: 15px;
-  }
-
+#give-donor-details .inside, #give-donation-overview .inside {
+  margin-top: 0;
 }
 
 .give_forms_page_give-payment-history #give-dashboard-widgets-wrap #side-sortables {

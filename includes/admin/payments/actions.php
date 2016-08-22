@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function give_update_payment_details( $data ) {
 
 	if ( ! current_user_can( 'edit_give_payments', $data['give_payment_id'] ) ) {
-		wp_die( esc_html__( 'You do not have permission to edit payment records.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
+		wp_die( esc_html__( 'You do not have permission to edit payments.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
 	}
 
 	check_admin_referer( 'give_update_payment_details_nonce' );
@@ -73,13 +73,20 @@ function give_update_payment_details( $data ) {
 	$curr_customer_id = sanitize_text_field( $data['give-current-customer'] );
 	$new_customer_id  = sanitize_text_field( $data['customer-id'] );
 
+	/**
+	 * Fires before updating edited donation.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int $payment_id The ID of the payment.
+	 */
 	do_action( 'give_update_edited_purchase', $payment_id );
 
 	$payment->date = $date;
 	$updated       = $payment->save();
 
 	if ( 0 === $updated ) {
-		wp_die( esc_attr__( 'Error Updating Payment.', 'give' ), esc_attr__( 'Error', 'give' ), array( 'response' => 400 ) );
+		wp_die( esc_html__( 'Error Updating Donation.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 400 ) );
 	}
 
 
@@ -91,7 +98,7 @@ function give_update_payment_details( $data ) {
 		$names = isset( $data['give-new-customer-name'] ) ? sanitize_text_field( $data['give-new-customer-name'] ) : '';
 
 		if ( empty( $email ) || empty( $names ) ) {
-			wp_die( esc_attr__( 'New Customers require a name and email address.', 'give' ) );
+			wp_die( esc_html__( 'New Customers require a name and email address.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 400 ) );
 		}
 
 		$customer = new Give_Customer( $email );
@@ -151,20 +158,24 @@ function give_update_payment_details( $data ) {
 		$previous_customer->remove_payment( $payment_id, false );
 		$customer->attach_payment( $payment_id, false );
 
-        // Reduce previous user donation count and amoount.
-        $previous_customer->decrease_purchase_count();
-        $previous_customer->decrease_value( $curr_total );
+		if ( 'publish' == $status ) {
 
-		// If purchase was completed and not ever refunded, adjust stats of new customers.
-		if ( 'revoked' == $status || 'publish' == $status ) {
-			$customer->increase_purchase_count();
+            // Reduce previous user donation count and amount.
+            $previous_customer->decrease_purchase_count();
+            $previous_customer->decrease_value( $curr_total );
+
+            // If donation was completed adjust stats of new customers.
+            $customer->increase_purchase_count();
 			$customer->increase_value( $new_total );
 		}
 
 		$payment->customer_id = $customer->id;
 	} else{
-		// Update user donation stat.
-		$customer->update_donation_value( $curr_total, $new_total );
+
+	    if( 'publish' === $status ){
+            // Update user donation stat.
+            $customer->update_donation_value( $curr_total, $new_total );
+        }
     }
 
 	// Set new meta values
@@ -188,7 +199,7 @@ function give_update_payment_details( $data ) {
 	$payment->status = $status;
 
 	// Adjust total store earnings if the payment total has been changed
-	if ( $new_total !== $curr_total && ( 'publish' == $status || 'revoked' == $status ) ) {
+	if ( $new_total !== $curr_total && 'publish' == $status ) {
 
 		if ( $new_total > $curr_total ) {
 			// Increase if our new total is higher
@@ -239,8 +250,8 @@ function give_update_payment_details( $data ) {
         }
 
 
-        // If purchase was completed and not ever refunded, adjust stats of forms
-        if ( 'revoked' == $status || 'publish' == $status ) {
+        // If donation was completed, adjust stats of forms
+        if ( 'publish' == $status ) {
 
             // Decrease sale of old give form. For other payment status 
             $current_form = new Give_Donate_Form( $current_form_id );
@@ -277,6 +288,13 @@ function give_update_payment_details( $data ) {
         $payment->update_payment_setup( $payment->ID );
     }
 
+	/**
+	 * Fires after updating edited donation.
+	 *
+	 * @since 1.0
+	 *
+	 * @param int $payment_id The ID of the payment.
+	 */
 	do_action( 'give_updated_edited_purchase', $payment_id );
 
 	wp_safe_redirect( admin_url( 'edit.php?post_type=give_forms&page=give-payment-history&view=view-order-details&give-message=payment-updated&id=' . $payment_id ) );
@@ -286,7 +304,7 @@ function give_update_payment_details( $data ) {
 add_action( 'give_update_payment_details', 'give_update_payment_details' );
 
 /**
- * Trigger a Purchase Deletion
+ * Trigger a Donation Deletion
  *
  * @since 1.0
  *
@@ -300,7 +318,7 @@ function give_trigger_purchase_delete( $data ) {
 		$payment_id = absint( $data['purchase_id'] );
 
 		if ( ! current_user_can( 'edit_give_payments', $payment_id ) ) {
-			wp_die( esc_html__( 'You do not have permission to edit payment records.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
+			wp_die( esc_html__( 'You do not have permission to edit payments.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
 		}
 
 		give_delete_purchase( $payment_id );
@@ -312,7 +330,7 @@ function give_trigger_purchase_delete( $data ) {
 add_action( 'give_delete_payment', 'give_trigger_purchase_delete' );
 
 /**
- * AJAX Store Payment Note
+ * AJAX Store Donation Note
  */
 function give_ajax_store_payment_note() {
 
@@ -320,7 +338,7 @@ function give_ajax_store_payment_note() {
 	$note       = wp_kses( $_POST['note'], array() );
 
 	if ( ! current_user_can( 'edit_give_payments', $payment_id ) ) {
-		wp_die( esc_html__( 'You do not have permission to edit payment records.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
+		wp_die( esc_html__( 'You do not have permission to edit payments.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
 	}
 
 	if ( empty( $payment_id ) ) {
@@ -353,7 +371,7 @@ function give_trigger_payment_note_deletion( $data ) {
 	}
 
 	if ( ! current_user_can( 'edit_give_payments', $data['payment_id'] ) ) {
-		wp_die( esc_html__( 'You do not have permission to edit payment records.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
+		wp_die( esc_html__( 'You do not have permission to edit payments.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
 	}
 
 	$edit_order_url = admin_url( 'edit.php?post_type=give_forms&page=give-payment-history&view=view-order-details&give-message=payment-note-deleted&id=' . absint( $data['payment_id'] ) );
@@ -375,7 +393,7 @@ add_action( 'give_delete_payment_note', 'give_trigger_payment_note_deletion' );
 function give_ajax_delete_payment_note() {
 
 	if ( ! current_user_can( 'edit_give_payments', $_POST['payment_id'] ) ) {
-		wp_die( esc_html__( 'You do not have permission to edit payment records.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
+		wp_die( esc_html__( 'You do not have permission to edit payments.', 'give' ), esc_html__( 'Error', 'give' ), array( 'response' => 403 ) );
 	}
 
 	if ( give_delete_payment_note( $_POST['note_id'], $_POST['payment_id'] ) ) {

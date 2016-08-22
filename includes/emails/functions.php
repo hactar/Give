@@ -58,6 +58,16 @@ function give_email_donation_receipt( $payment_id, $admin_notice = true ) {
 	$emails->send( $to_email, $subject, $message, $attachments );
 
 	if ( $admin_notice && ! give_admin_notices_disabled( $payment_id ) ) {
+		/**
+		 * Fires in the email donation receipt.
+		 *
+		 * When admin notices are not disabled, you can add new sale notices.
+		 *
+		 * @since 1.0
+		 *
+		 * @param int   $payment_id   Payment id.
+		 * @param mixed $payment_data Payment meta data.
+		 */
 		do_action( 'give_admin_sale_notice', $payment_id, $payment_data );
 	}
 }
@@ -153,17 +163,16 @@ function give_admin_email_notice( $payment_id = 0, $payment_data = array() ) {
 add_action( 'give_admin_sale_notice', 'give_admin_email_notice', 10, 2 );
 
 /**
- * Retrieves the emails for which admin notifications are sent to (these can be
- * changed in the Give Settings)
+ * Retrieves the emails for which admin notifications are sent to (these can be changed in the Give Settings).
  *
  * @since 1.0
- * @global $give_options Array of all the Give Options
  * @return mixed
  */
 function give_get_admin_notice_emails() {
-	global $give_options;
 
-	$emails = isset( $give_options['admin_notice_emails'] ) && strlen( trim( $give_options['admin_notice_emails'] ) ) > 0 ? $give_options['admin_notice_emails'] : get_bloginfo( 'admin_email' );
+	$email_option = give_get_option('admin_notice_emails');
+
+	$emails = !empty( $email_option ) && strlen( trim( $email_option ) ) > 0 ? $email_option : get_bloginfo( 'admin_email' );
 	$emails = array_map( 'trim', explode( "\n", $emails ) );
 
 	return apply_filters( 'give_admin_notice_emails', $emails );
@@ -196,7 +205,7 @@ function give_admin_notices_disabled( $payment_id = 0 ) {
 function give_get_default_donation_notification_email() {
 
 	$default_email_body  = esc_html__( 'Hi there,', 'give' ) . "\n\n";
-	$default_email_body .= esc_html__( 'This email is to inform you that a new donation has been made on your website: ', 'give' ) . ' <a href="' . get_bloginfo( 'url' ) . '" target="_blank">' . get_bloginfo( 'url' ) . '</a>' . ".\n\n";
+	$default_email_body .= esc_html__( 'This email is to inform you that a new donation has been made on your website:', 'give' ) . ' <a href="' . get_bloginfo( 'url' ) . '" target="_blank">' . get_bloginfo( 'url' ) . '</a>' . ".\n\n";
 	$default_email_body .= '<strong>' . esc_html__( 'Donor:', 'give' ) . '</strong> {name}' . "\n";
 	$default_email_body .= '<strong>' . esc_html__( 'Donation:', 'give' ) . '</strong> {donation}' . "\n";
 	$default_email_body .= '<strong>' . esc_html__( 'Amount:', 'give' ) . '</strong> {price}' . "\n";
